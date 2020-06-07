@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 
 def GradientDescent(x, y, weights, LR, iterations):
+	# Graph MSE
+	MSEgraph = []
 	for k in range(iterations):
 		# Initialize Hypothesis
 		H = np.dot(x, weights)
@@ -11,14 +13,21 @@ def GradientDescent(x, y, weights, LR, iterations):
 		E = np.subtract(H, y)
 		# Define Mean Squared Error
 		MSE = (1 / (2 * (int(len(H))))) * np.dot(np.transpose(E), E)
-		print("MSE ", MSE)
+		MSEgraph.append(MSE)
+		# print("MSE ", MSE)
 		# Define Gradient -> MSE derivative to weight
 		gradient = (1 / ((int(len(H))))) * np.dot(E, x)
 
 		# Revise Weights
 		# New Weight = Old Weight - Learning Rate * Gradient
 		weights = np.subtract(weights, LR * gradient)
-		print(weights)
+	# Plot MSE
+	print(MSEgraph)
+	print("Final Weights: ", Weights)
+	fig2, ax = plt.subplots()
+	ax.plot(MSEgraph)
+	ax.set_title("Mean Squared Error")
+	ax.set_xlabel("No. of Iterations")
 	return weights
 
 # Attributes:
@@ -85,39 +94,13 @@ iterations = 10000
 '''
 Gradient Descent
 '''
-# GD in main so that we can plot to graph
-MSEgraph = []
-for k in range(iterations):
-	# Initialize Hypothesis
-	H = np.dot(InputTrain, Weights)
-	# Define Error
-	# E = H - Y
-	E = np.subtract(H, OutputTrain)
-	# Define Mean Squared Error
-	MSE = (1 / (2 * (int(len(H))))) * np.dot(np.transpose(E), E)
-	MSEgraph.append(MSE)
-	#print("MSE ", MSE)
-	# Define Gradient -> MSE derivative to weight
-	gradient = (1 / ((int(len(H))))) * np.dot(E, InputTrain)
-
-	# Revise Weights
-	# New Weight = Old Weight - Learning Rate * Gradient
-	Weights = np.subtract(Weights, LR * gradient)
-	#print(Weights)
-
-# Plot MSE
-print(MSEgraph)
-print("Final Weights: ", Weights)
-fig2, ax = plt.subplots()
-ax.plot(MSEgraph)
-ax.set_title("Mean Squared Error")
-ax.set_xlabel("No. of Iterations")
+FinalWeights = GradientDescent(InputTrain,OutputTrain,Weights,LR,iterations)
 plt.show()
 
 # Apply Model to Test Data Set
 # Get X Values from Test Data x Weights Found
 # Compare to X Values with actual output values from test data set
-X_values = np.dot(InputTest, Weights)
+X_values = np.dot(InputTest, FinalWeights)
 correlation_matrix = np.corrcoef(X_values, OutputTest)
 correlation_xy = correlation_matrix[0,1]
 r_squared = correlation_xy**2
