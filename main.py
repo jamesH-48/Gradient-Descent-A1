@@ -2,33 +2,35 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-def GradientDescent(x, y, weights, LR, iterations):
-	# Graph MSE
-	MSEgraph = []
-	for k in range(iterations):
-		# Initialize Hypothesis
-		H = np.dot(x, weights)
-		# Define Error
-		# E = H - Y
-		E = np.subtract(H, y)
-		# Define Mean Squared Error
-		MSE = (1 / (2 * (int(len(H))))) * np.dot(np.transpose(E), E)
-		MSEgraph.append(MSE)
-		# print("MSE ", MSE)
-		# Define Gradient -> MSE derivative to weight
-		gradient = (1 / ((int(len(H))))) * np.dot(E, x)
 
-		# Revise Weights
-		# New Weight = Old Weight - Learning Rate * Gradient
-		weights = np.subtract(weights, LR * gradient)
-	# Plot MSE
-	print(MSEgraph)
-	print("Final Weights: ", Weights)
-	fig2, ax = plt.subplots()
-	ax.plot(MSEgraph)
-	ax.set_title("Mean Squared Error")
-	ax.set_xlabel("No. of Iterations")
-	return weights
+def gradientdescent(x, y, weights, LR, iterations):
+    # Graph MSE
+    MSEgraph = []
+    for k in range(iterations):
+        # Initialize Hypothesis
+        H = np.dot(x, weights)
+        # Define Error
+        # E = H - Y
+        E = np.subtract(H, y)
+        # Define Mean Squared Error
+        MSE = (1 / (2 * (int(len(H))))) * np.dot(np.transpose(E), E)
+        MSEgraph.append(MSE)
+        # print("MSE ", MSE)
+        # Define Gradient -> MSE derivative to weight
+        gradient = (1 / ((int(len(H))))) * np.dot(E, x)
+
+        # Revise Weights
+        # New Weight = Old Weight - Learning Rate * Gradient
+        weights = np.subtract(weights, LR * gradient)
+    # Plot MSE
+    print(MSEgraph)
+    print("Final Weights: ", Weights)
+    fig2, ax = plt.subplots()
+    ax.plot(MSEgraph)
+    ax.set_title("Mean Squared Error")
+    ax.set_xlabel("No. of Iterations")
+    return weights
+
 
 # Attributes:
 # Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate
@@ -36,7 +38,7 @@ def GradientDescent(x, y, weights, LR, iterations):
 # 8 input variables, 1 output variable
 # Retrieve Data from GitHub Repository
 url = "https://raw.githubusercontent.com/jamesH-48/Gradient-Descent-A1/master/Concrete_Data.csv"
-data = pd.read_csv(url,header=None)
+data = pd.read_csv(url, header=None)
 values = data.values
 
 '''
@@ -58,16 +60,17 @@ Going to test this to see what leads to best results
 	values = np.delete(values, above, 0)	# delete row if outlier'''
 
 # Plot Data ~ each column has its own subplot
-plt.figure()
+fig1 = plt.figure()
+fig1.suptitle('Input Attributes', fontsize=16)
 for i in range(values.shape[1]):
-	plt.subplot(values.shape[1], 1, i+1)
-	plt.plot(values[:, i])
+    plt.subplot(values.shape[1], 1, i + 1)
+    plt.plot(values[:, i])
 # Show Plot Graph of each attribute value vs number of attributes per column
 # plt.show()
 
 # Split Data based on Inputs vs Outputs for X and y
-Input = values[:,[0,1,2,3,4,5,6,7]]
-Output = values[:,8]
+Input = values[:, [0, 1, 2, 3, 4, 5, 6, 7]]
+Output = values[:, 8]
 
 '''
 Split Test
@@ -79,13 +82,13 @@ print(B,"\n",C)
 
 # Split Data based on Training/Test -> 80/20
 # X - attributes
-InputTrain = Input[:int(len(Input)*.8),:]
-InputTest = Input[int(len(Input)*.8):,:]
+InputTrain = Input[:int(len(Input) * .8), :]
+InputTest = Input[int(len(Input) * .8):, :]
 # Y
-OutputTrain = Output[:int(len(Output)*.8)]
-OutputTest = Output[int(len(Output)*.8):]
+OutputTrain = Output[:int(len(Output) * .8)]
+OutputTest = Output[int(len(Output) * .8):]
 # Initialize Weights
-Weights = np.random.uniform(0.0, 1.0, size = 8)
+Weights = np.random.uniform(0.0, 1.0, size=8)
 # Initialize Learning Rate
 LR = .000001
 # Set Iterations
@@ -94,7 +97,7 @@ iterations = 10000
 '''
 Gradient Descent
 '''
-FinalWeights = GradientDescent(InputTrain,OutputTrain,Weights,LR,iterations)
+FinalWeights = gradientdescent(InputTrain, OutputTrain, Weights, LR, iterations)
 plt.show()
 
 # Apply Model to Test Data Set
@@ -102,6 +105,6 @@ plt.show()
 # Compare to X Values with actual output values from test data set
 X_values = np.dot(InputTest, FinalWeights)
 correlation_matrix = np.corrcoef(X_values, OutputTest)
-correlation_xy = correlation_matrix[0,1]
-r_squared = correlation_xy**2
+correlation_xy = correlation_matrix[0, 1]
+r_squared = correlation_xy ** 2
 print(r_squared)
