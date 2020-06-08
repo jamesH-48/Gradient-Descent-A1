@@ -1,30 +1,32 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-
+from sklearn.metrics import mean_squared_error, r2_score
 
 def gradientdescent(x, y, weights, LR, iterations):
     # Graph MSE
-    MSEgraph = []
+    MSEgraph = np.zeros((iterations,1))
     for k in range(iterations):
+        if(iterations == 90000):
+            LR = .0000001
         # Initialize Hypothesis
         H = np.dot(x, weights)
         # Define Error
         # E = H - Y
         E = np.subtract(H, y)
         # Define Mean Squared Error
-        MSE = (1 / (2 * (int(len(H))))) * np.dot(np.transpose(E), E)
-        MSEgraph.append(MSE)
+        MSE = (1 / (2 * (int(len(y))))) * np.dot(np.transpose(E), E)
+        MSEgraph[k] = MSE
         # print("MSE ", MSE)
         # Define Gradient -> MSE derivative to weight
-        gradient = (1 / ((int(len(H))))) * np.dot(E, x)
+        gradient = (1 / (int(len(y)))) * np.dot(E, x)
 
         # Revise Weights
         # New Weight = Old Weight - Learning Rate * Gradient
         weights = np.subtract(weights, LR * gradient)
     # Plot MSE
     print(MSEgraph)
-    print("Final Weights: ", Weights)
+    print("Final Weights: ", weights)
     fig2, ax = plt.subplots()
     ax.plot(MSEgraph)
     ax.set_title("Mean Squared Error")
@@ -88,23 +90,38 @@ InputTest = Input[int(len(Input) * .8):, :]
 OutputTrain = Output[:int(len(Output) * .8)]
 OutputTest = Output[int(len(Output) * .8):]
 # Initialize Weights
-Weights = np.random.uniform(0.0, 1.0, size=8)
+Weights = np.random.uniform(0.0, .3, size=8)
 # Initialize Learning Rate
 LR = .000001
 # Set Iterations
-iterations = 10000
+iterations = 100000
 
 '''
 Gradient Descent
 '''
 FinalWeights = gradientdescent(InputTrain, OutputTrain, Weights, LR, iterations)
-plt.show()
+#plt.show()
 
 # Apply Model to Test Data Set
 # Get X Values from Test Data x Weights Found
 # Compare to X Values with actual output values from test data set
-X_values = np.dot(InputTest, FinalWeights)
-correlation_matrix = np.corrcoef(X_values, OutputTest)
+Y_pred1 = np.dot(InputTrain, FinalWeights)
+Y_pred2 = np.dot(InputTest, FinalWeights)
+'''correlation_matrix = np.corrcoef(X_values, OutputTest)
 correlation_xy = correlation_matrix[0, 1]
 r_squared = correlation_xy ** 2
-print(r_squared)
+print(r_squared)'''
+
+print(mean_squared_error(Y_pred1,OutputTrain))
+print(r2_score(Y_pred1,OutputTrain))
+print('\n')
+print(mean_squared_error(Y_pred2,OutputTest))
+print(r2_score(Y_pred2,OutputTest))
+# Print Plot of Outputs
+figure1, ax = plt.subplots()
+figure2, ax2 = plt.subplots()
+ax.plot(OutputTest, color='black', markersize=5)
+ax.plot(Y_pred2, color='magenta', markersize=5)
+ax2.plot(OutputTrain, color='red', markersize=5)
+ax2.plot(Y_pred1, color='cyan', markersize=5)
+plt.show()
