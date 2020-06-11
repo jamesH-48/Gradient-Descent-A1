@@ -147,8 +147,24 @@ iterations = 10000
 FinalWeights = gradientdescent(X_train, Y_train, Weights, LR, iterations)
 print(FinalWeights.shape)
 print(FinalWeights)
-# Weights Bar Graph
 
+'''
+Graphic Display
+'''
+# Weights Bar Graph
+labels = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
+x = np.arange(len(labels))  # Location of Labels
+width = .5                 # Width of the bars
+figureW, axW = plt.subplots()
+coef = []
+print(FinalWeights.shape[0])
+for i in range(FinalWeights.shape[0]):
+    coef.append(FinalWeights[i][0])
+bars = axW.bar(x,coef,width,color='orange')
+axW.set_ylabel('Weight')
+axW.set_title('Coefficients')
+axW.set_xticks(x)
+axW.set_xticklabels(labels)
 
 # Apply Model to Test Data Set
 # Get X Values from Test Data x Weights Found
@@ -161,6 +177,10 @@ print(r2_score(Y_pred1,Y_train))
 print('\n')
 print(mean_squared_error(Y_pred2,Y_test))
 print(r2_score(Y_pred2,Y_test))
+
+'''
+Graphic Display
+'''
 # Print Plot of Outputs
 figure1, ax = plt.subplots()
 figure2, ax2 = plt.subplots()
