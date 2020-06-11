@@ -24,13 +24,13 @@ def gradientdescent(x, y, weights, LR, iterations):
         weights = np.subtract(weights, LR * gradient)
     return weights, MSEgraph
 
-def removeOutliers(data):
+def removeOutliers(data, deviations):
     removeList = []
     for i in range(data.values.shape[1] - 1):
         # Calculate Mean & Standard Deviation
         Data_Mean, Data_STD = np.mean(data.values[:,i]), np.std(data.values[:,i])
         # Define Outlier Boundary by the standard deviation
-        bound = Data_STD * 4
+        bound = Data_STD * deviations
         lower, upper = Data_Mean - bound, Data_Mean + bound
         # Remove Outliers that are below the lower bound
         below = [j for j in range(data.values.shape[0]) if data.values[j,i] < lower]
@@ -70,7 +70,8 @@ def main(state):
     Pre-Processing 
     '''
     # Pre-Processing ~ Remove Outliers
-    data = removeOutliers(data)
+    deviations = 4
+    data = removeOutliers(data, deviations)
 
     '''
     Graphic Display ~ Attribute Correlation Heatmap
@@ -133,6 +134,12 @@ def main(state):
     # Compare Y prediction Values with actual output values from test data set
     Y_pred1 = np.dot(X_train, FinalWeights)
     Y_pred2 = np.dot(X_test, FinalWeights)
+    # Parameters Used
+    print("Parameters Used:")
+    print("State: ", state)
+    print("Standard Deviations for Outlier Removal: ", deviations)
+    print("Learning Rate: ", LR)
+    print("Iterations: ", iterations)
     # Coefficients
     coef = []           # Initialize
     for i in range(FinalWeights.shape[0]):  # For Print & Bar Graph
@@ -192,5 +199,5 @@ if __name__ == '__main__':
     print("Part 1: Gradient Descent")
     # State is the order of data that is randomized in train-test-split
     # The state can be seen as the seed for repeatable datasets
-    state = 4
+    state = 0
     main(state)
