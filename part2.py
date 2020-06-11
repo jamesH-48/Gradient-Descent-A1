@@ -6,13 +6,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 
-def removeOutliers(data):
+def removeOutliers(data, deviations):
     removeList = []
     for i in range(data.values.shape[1] - 1):
         # Calculate Mean & Standard Deviation
         Data_Mean, Data_STD = np.mean(data.values[:,i]), np.std(data.values[:,i])
         # Define Outlier Boundary by the standard deviation
-        bound = Data_STD * 2
+        bound = Data_STD * deviations
         lower, upper = Data_Mean - bound, Data_Mean + bound
         # Remove Outliers that are below the lower bound
         below = [j for j in range(data.values.shape[0]) if data.values[j,i] < lower]
@@ -52,7 +52,8 @@ def main(state):
     Pre-Processing 
     '''
     # Pre-Processing ~ Remove Outliers
-    data = removeOutliers(data)
+    deviations = 4
+    data = removeOutliers(data, deviations)
 
     '''
     Graphic Display ~ Attribute Correlation Heatmap
@@ -106,6 +107,10 @@ def main(state):
     '''
     Final Values Print ~ Mean Squared Error & R^2
     '''
+    # Parameters Used
+    print("Parameters Used:")
+    print("State: ", state)
+    print("Standard Deviations for Outlier Removal: ", deviations)
     # Coefficients
     print('Coefficients: \n', regr.coef_[0])
     # Train Accuracy
@@ -154,5 +159,5 @@ if __name__ == '__main__':
     print("Part 2: Sklearn Linear Regression")
     # State is the order of data that is randomized in train-test-split
     # The state can be seen as the seed for repeatable datasets
-    state = 4
+    state = 0
     main(state)
