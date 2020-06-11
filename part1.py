@@ -78,18 +78,22 @@ def main(state):
     # Compute pairwise correlation of columns
     corr = data.corr()
     # Display Heatmap of Correlations
-    sns.set()
-    axi1 = sns.heatmap(corr, cmap="BuPu", annot=True)
+    axHeat = plt.axes()
+    axi1 = sns.heatmap(corr, ax = axHeat, cmap="BuPu", annot=True)
+    axHeat.set_title('Heatmap of Attribute Correlation', fontsize = 24)
 
     '''
     Graphic Display ~ Attribute Plots (inputs & output)
     '''
+    labelsAttPlot = ['Cement', 'Blast Furnace Slag', 'Fly Ash', 'Water', 'Superplasticizer', 'Coarse Aggregate',
+              'Fine Aggregate', 'Age','Concrete Compressive Strength']
     # Plot Data ~ each column has its own subplot
-    fig1 = plt.figure()
-    fig1.suptitle('Input Attributes', fontsize=16)
+    fig1, axs = plt.subplots(9)
+    fig1.suptitle('Input/Output Attribute Values', fontsize=16)
     for i in range(values.shape[1]):
-        plt.subplot(values.shape[1], 1, i + 1)
-        plt.plot(values[:, i])
+        axs[i].plot(values[:, i])
+        axs[i].set_ylabel(labelsAttPlot[i])
+    axs[8].set_xlabel("No. of Values")
 
     '''
     Pre-Processing ~ Train Test Split
@@ -149,10 +153,16 @@ def main(state):
     # Print Plot of Outputs
     figure1, ax = plt.subplots()
     figure2, ax2 = plt.subplots()
-    ax.plot(Y_train, color='red', markersize=5)
-    ax.plot(Y_pred1, color='cyan', markersize=5)
-    ax2.plot(Y_test, color='black', markersize=5)
-    ax2.plot(Y_pred2, color='magenta', markersize=5)
+    ax.plot(Y_train, color='red', markersize=5, label="Actual")
+    ax.plot(Y_pred1, color='cyan', markersize=5, label="Prediction")
+    ax.set_title('Y Train Dataset')
+    ax.set_xlabel('No. of Values')
+    ax.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
+    ax2.plot(Y_test, color='black', markersize=5, label="Actual")
+    ax2.plot(Y_pred2, color='magenta', markersize=5, label="Prediction")
+    ax2.set_title('Y Test Dataset')
+    ax2.set_xlabel('No. of Values')
+    ax2.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
 
     '''
     Graphic Display ~ Mean Squared Error
