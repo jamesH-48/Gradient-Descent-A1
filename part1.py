@@ -199,5 +199,5 @@ if __name__ == '__main__':
     print("Part 1: Gradient Descent")
     # State is the order of data that is randomized in train-test-split
     # The state can be seen as the seed for repeatable datasets
-    state = 0
+    state = 4
     main(state)
