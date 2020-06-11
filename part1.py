@@ -11,34 +11,19 @@ def gradientdescent(x, y, weights, LR, iterations):
     for k in range(iterations):
         # Initialize Hypothesis
         H = np.dot(x, weights)
-        #print("H",H.shape)
         # Define Error
         # E = H - Y
         E = np.subtract(H, y)
-        #print("E", E.shape)
         # Define Mean Squared Error
         MSE = (1 / (2 * (int(len(y))))) * np.dot(np.transpose(E), E)
-        #print("MSE", MSE.shape)
         MSEgraph[k] = MSE
-        # print("MSE ", MSE)
         # Define Gradient -> MSE derivative to weight
         gradient = (1 / (int(len(y)))) * np.dot(np.transpose(x), E)
-        #print("gradient", gradient.shape)
-
         # Revise Weights
         # New Weight = Old Weight - Learning Rate * Gradient
         weights = np.subtract(weights, LR * gradient)
-    # Plot MSE
-    print(MSEgraph)
-    print("Final Weights: \n", weights)
-    fig2, ax = plt.subplots()
-    ax.plot(MSEgraph)
-    ax.set_title("Mean Squared Error")
-    ax.set_xlabel("No. of Iterations")
-    return weights
+    return weights, MSEgraph
 
-#  Pre-Processing ~ Remove Outliers from dataset
-# Over each column (except open/closed)
 def removeOutliers(data):
     removeList = []
     for i in range(data.values.shape[1] - 1):
@@ -61,131 +46,141 @@ def removeOutliers(data):
     removeList = list(set(removeList))
     # Sort Remove List in increasing order
     removeList.sort()
-    print("length: ", len(removeList))
     # Remove Rows for Data Frame
     for i in range(len(removeList)):
         data = data.drop(removeList[i])
     return data
 
-# Attributes:
-# Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate
-# Fine Aggregate, Age, Concrete Compressive Strength
-# 8 input variables, 1 output variable
-# Retrieve Data from GitHub Repository
-url = "https://raw.githubusercontent.com/jamesH-48/Gradient-Descent-A1/master/Concrete_Data.csv"
-data = pd.read_csv(url, header=None)
-data = data.rename(columns={0:"Cement",1:"Blast Furnace Slag",2:"Fly Ash",3:"Water",4:"Superplasticizer",5:"Coarse Aggregate",6:"Fine Aggregate",7:"Age",8:"Concrete Compressive Strength"})
-values = data.values
+def main(state):
+    # Attributes:
+    # Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate
+    # Fine Aggregate, Age, Concrete Compressive Strength
+    # 8 input variables, 1 output variable
+    # Retrieve Data from GitHub Repository
+    url = "https://raw.githubusercontent.com/jamesH-48/Gradient-Descent-A1/master/Concrete_Data.csv"
+    data = pd.read_csv(url, header=None)
+    data = data.rename(columns={0:"Cement",1:"Blast Furnace Slag",2:"Fly Ash",3:"Water",4:"Superplasticizer",5:"Coarse Aggregate",6:"Fine Aggregate",7:"Age",8:"Concrete Compressive Strength"})
+    values = data.values
 
-# Add Column Intercept of 1s to data frame
-# data.insert(0, 'Intercept', 1)
-# So far hasn't changed values
+    # Add Column Intercept of 1s to data frame
+    # data.insert(0, 'Intercept', 1)
+    # So far hasn't changed values
 
-'''
-Pre-Processing 
-'''
-# Pre-Processing ~ Remove Outliers
-data = removeOutliers(data)
+    '''
+    Pre-Processing 
+    '''
+    # Pre-Processing ~ Remove Outliers
+    data = removeOutliers(data)
 
-'''
-Graphic Display
-'''
-# Compute pairwise correlation of columns
-corr = data.corr()
-# Display Heatmap of Correlations
-sns.set()
-axi1 = sns.heatmap(corr, cmap="BuPu", annot=True)
-#axi2 = sns.pairplot(data)
+    '''
+    Graphic Display ~ Attribute Correlation Heatmap
+    '''
+    # Compute pairwise correlation of columns
+    corr = data.corr()
+    # Display Heatmap of Correlations
+    sns.set()
+    axi1 = sns.heatmap(corr, cmap="BuPu", annot=True)
 
-'''
-Graphic Display
-'''
-# Plot Data ~ each column has its own subplot
-fig1 = plt.figure()
-fig1.suptitle('Input Attributes', fontsize=16)
-for i in range(values.shape[1]):
-    plt.subplot(values.shape[1], 1, i + 1)
-    plt.plot(values[:, i])
+    '''
+    Graphic Display ~ Attribute Plots (inputs & output)
+    '''
+    # Plot Data ~ each column has its own subplot
+    fig1 = plt.figure()
+    fig1.suptitle('Input Attributes', fontsize=16)
+    for i in range(values.shape[1]):
+        plt.subplot(values.shape[1], 1, i + 1)
+        plt.plot(values[:, i])
 
-'''
-Pre-Processing 
-'''
-# Pre-Processing ~ Train-Test Split Dataset
-# Create X data frame that contains the inputs
-Xdf = data[["Cement","Blast Furnace Slag","Fly Ash","Water","Superplasticizer","Coarse Aggregate","Fine Aggregate","Age"]]
-# Convert X data frame to numpy array (just known as X)
-X = Xdf.to_numpy()
-# Create Y data frame that contains the output
-Ydf = data[["Concrete Compressive Strength"]]
-# Convert Y data frame to numpy array (just known as Y)
-Y = Ydf.to_numpy()
-# Split into 4 datasets for training and testing
-X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2, random_state=0)
+    '''
+    Pre-Processing ~ Train Test Split
+    '''
+    # Pre-Processing ~ Train-Test Split Dataset
+    # Create X data frame that contains the inputs
+    Xdf = data[["Cement","Blast Furnace Slag","Fly Ash","Water","Superplasticizer","Coarse Aggregate","Fine Aggregate","Age"]]
+    # Convert X data frame to numpy array (just known as X)
+    X = Xdf.to_numpy()
+    # Create Y data frame that contains the output
+    Ydf = data[["Concrete Compressive Strength"]]
+    # Convert Y data frame to numpy array (just known as Y)
+    Y = Ydf.to_numpy()
+    # Split into 4 datasets for training and testing
+    X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2, random_state=state)
 
+    '''
+    Intialization
+    '''
+    # Initialize Weights
+    Weights = np.array([[0],[0],[0],[0],[0],[0],[0],[0]])
+    # Initialize Learning Rate
+    LR = .000001
+    # Set Iterations
+    iterations = 10000
 
-# Proof of Shape
-print("X_train trans: ", np.transpose(X_train).shape)
-print("X_train: ", X_train.shape)
-print("X_test: ", X_test.shape)
-print("Y_train: ", Y_train.shape)
-print("Y_test: ", Y_test.shape)
+    '''
+    Gradient Descent
+    '''
+    FinalWeights, MSEgraph = gradientdescent(X_train, Y_train, Weights, LR, iterations)
 
-# Initialize Weights
-#Weights = np.random.uniform(0.0, .2, size=8)
-Weights = np.array([[0],[0],[0],[0],[0],[0],[0],[0]])
-print("Weights: ", Weights)
-print(Weights.shape)
+    '''
+    Final Values Print ~ Mean Squared Error & R^2
+    '''
+    # Apply Model found Weights to Test Data Set
+    # Get Y prediction Values from Test Data x Weights Found
+    # Compare Y prediction Values with actual output values from test data set
+    Y_pred1 = np.dot(X_train, FinalWeights)
+    Y_pred2 = np.dot(X_test, FinalWeights)
+    # Coefficients
+    coef = []           # Initialize
+    for i in range(FinalWeights.shape[0]):  # For Print & Bar Graph
+        coef.append(FinalWeights[i][0])
+    print('Coefficients: \n', coef)
+    # Train Accuracy
+    print("Train Accuracy:")
+    print("Mean Squared Error: ", mean_squared_error(Y_pred1,Y_train))
+    print("R^2 Value: ", r2_score(Y_pred1,Y_train))
+    # Test Accuracy
+    print("Test Accuracy:")
+    print("Mean Squared Error: ", mean_squared_error(Y_pred2,Y_test))
+    print("R^2 Value: ", r2_score(Y_pred2,Y_test))
 
-# Initialize Learning Rate
-LR = .000001
-# Set Iterations
-iterations = 10000
+    '''
+    Graphic Display ~ Train Accuracy & Test Accuracy Plots
+    '''
+    # Print Plot of Outputs
+    figure1, ax = plt.subplots()
+    figure2, ax2 = plt.subplots()
+    ax.plot(Y_train, color='red', markersize=5)
+    ax.plot(Y_pred1, color='cyan', markersize=5)
+    ax2.plot(Y_test, color='black', markersize=5)
+    ax2.plot(Y_pred2, color='magenta', markersize=5)
 
-'''
-#Gradient Descent
-'''
-FinalWeights = gradientdescent(X_train, Y_train, Weights, LR, iterations)
-print(FinalWeights.shape)
-print(FinalWeights)
+    '''
+    Graphic Display ~ Mean Squared Error
+    '''
+    figureMSE, axMSE = plt.subplots()
+    axMSE.plot(MSEgraph)
+    axMSE.set_title("Mean Squared Error")
+    axMSE.set_xlabel("No. of Iterations")
 
-'''
-Graphic Display
-'''
-# Weights Bar Graph
-labels = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
-x = np.arange(len(labels))  # Location of Labels
-width = .5                 # Width of the bars
-figureW, axW = plt.subplots()
-coef = []
-print(FinalWeights.shape[0])
-for i in range(FinalWeights.shape[0]):
-    coef.append(FinalWeights[i][0])
-bars = axW.bar(x,coef,width,color='orange')
-axW.set_ylabel('Weight')
-axW.set_title('Coefficients')
-axW.set_xticks(x)
-axW.set_xticklabels(labels)
+    '''
+    Graphic Display ~ Coefficient Bar Graph
+    '''
+    # Weights Bar Graph
+    labels = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
+    x = np.arange(len(labels))       # Location of Labels
+    width = .5                       # Width of the bars
+    figureW, axW = plt.subplots()
+    bars = axW.bar(x,coef,width,color='orange') # Coef is from Weight Print
+    axW.set_ylabel('Weight')
+    axW.set_title('Coefficients')
+    axW.set_xticks(x)
+    axW.set_xticklabels(labels)
 
-# Apply Model to Test Data Set
-# Get X Values from Test Data x Weights Found
-# Compare to X Values with actual output values from test data set
-Y_pred1 = np.dot(X_train, FinalWeights)
-Y_pred2 = np.dot(X_test, FinalWeights)
+    plt.show()
 
-print(mean_squared_error(Y_pred1,Y_train))
-print(r2_score(Y_pred1,Y_train))
-print('\n')
-print(mean_squared_error(Y_pred2,Y_test))
-print(r2_score(Y_pred2,Y_test))
-
-'''
-Graphic Display
-'''
-# Print Plot of Outputs
-figure1, ax = plt.subplots()
-figure2, ax2 = plt.subplots()
-ax.plot(Y_train, color='red', markersize=5)
-ax.plot(Y_pred1, color='cyan', markersize=5)
-ax2.plot(Y_test, color='black', markersize=5)
-ax2.plot(Y_pred2, color='magenta', markersize=5)
-plt.show()
+if __name__ == '__main__':
+    print("Part 1: Gradient Descent")
+    # State is the order of data that is randomized in train-test-split
+    # The state can be seen as the seed for repeatable datasets
+    state = 4
+    main(state)
