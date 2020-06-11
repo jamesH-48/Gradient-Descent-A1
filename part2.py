@@ -123,20 +123,6 @@ def main(state):
     print("R^2 Test: ", r2_score(Y_pred2,Y_test))
 
     '''
-    Graphic Display ~ Coefficient Bar Graph
-    '''
-    # Weights Bar Graph
-    labelsBarGraph = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
-    x = np.arange(len(labelsBarGraph))  # Location of Labels
-    width = .5                  # Width of the bars
-    figureW, axW = plt.subplots()
-    bars = axW.bar(x,regr.coef_[0],width,color='orange')
-    axW.set_ylabel('Weight')
-    axW.set_title('Coefficients')
-    axW.set_xticks(x)
-    axW.set_xticklabels(labelsBarGraph)
-
-    '''
     Graphic Display ~ Train Accuracy & Test Accuracy Plots
     '''
     # Print Plot of Outputs
@@ -153,11 +139,25 @@ def main(state):
     ax2.set_xlabel('No. of Values')
     ax2.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
 
+    '''
+    Graphic Display ~ Coefficient Bar Graph
+    '''
+    # Weights Bar Graph
+    labelsBarGraph = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
+    x = np.arange(len(labelsBarGraph))  # Location of Labels
+    width = .5                  # Width of the bars
+    figureW, axW = plt.subplots()
+    bars = axW.bar(x,regr.coef_[0],width,color='orange')
+    axW.set_ylabel('Weight')
+    axW.set_title('Coefficients')
+    axW.set_xticks(x)
+    axW.set_xticklabels(labelsBarGraph)
+
     plt.show()
 
 if __name__ == '__main__':
     print("Part 2: Sklearn Linear Regression")
     # State is the order of data that is randomized in train-test-split
     # The state can be seen as the seed for repeatable datasets
-    state = 0
+    state = 4
     main(state)
