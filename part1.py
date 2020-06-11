@@ -104,7 +104,7 @@ def main(state):
     # Convert Y data frame to numpy array (just known as Y)
     Y = Ydf.to_numpy()
     # Split into 4 datasets for training and testing
-    X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2, random_state=state)
+    X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.1, random_state=state)
 
     '''
     Intialization
@@ -182,5 +182,5 @@ if __name__ == '__main__':
     print("Part 1: Gradient Descent")
     # State is the order of data that is randomized in train-test-split
     # The state can be seen as the seed for repeatable datasets
-    state = 4
+    state = 2
     main(state)
