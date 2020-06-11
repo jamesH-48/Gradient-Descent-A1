@@ -105,11 +105,25 @@ regr.fit(X_train,Y_train)
 # Make predictions using the testing dataset
 Y_pred1 = regr.predict(X_train)
 Y_pred2 = regr.predict(X_test)
-print('Coefficients: \n', regr.coef_)
+print('Coefficients: \n', regr.coef_[0])
 print("MSE Train: ", mean_squared_error(Y_pred1,Y_train, squared=True))
 print("R^2 Train: ", r2_score(Y_pred1,Y_train))
 print("MSE Test: ", mean_squared_error(Y_pred2,Y_test, squared=True))
 print("R^2 Test: ", r2_score(Y_pred2,Y_test))
+
+'''
+Graphic Display
+'''
+# Weights Bar Graph
+labels = ['Cement','Blast Furnace Slag','Fly Ash','Water','Superplasticizer','Coarse Aggregate','Fine Aggregate','Age']
+x = np.arange(len(labels))  # Location of Labels
+width = .5                 # Width of the bars
+figureW, axW = plt.subplots()
+bars = axW.bar(x,regr.coef_[0],width,color='orange')
+axW.set_ylabel('Weight')
+axW.set_title('Coefficients')
+axW.set_xticks(x)
+axW.set_xticklabels(labels)
 
 # Print Plot of Outputs
 figure1, ax = plt.subplots()
