@@ -4,8 +4,6 @@ import numpy as np
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import Normalizer, StandardScaler
-from sklearn import preprocessing
 
 def gradientdescent(x, y, weights, LR, iterations):
     # Graph MSE
@@ -39,6 +37,36 @@ def gradientdescent(x, y, weights, LR, iterations):
     ax.set_xlabel("No. of Iterations")
     return weights
 
+#  Pre-Processing ~ Remove Outliers from dataset
+# Over each column (except open/closed)
+def removeOutliers(data):
+    removeList = []
+    for i in range(data.values.shape[1] - 1):
+        # Calculate Mean & Standard Deviation
+        Data_Mean, Data_STD = np.mean(data.values[:,i]), np.std(data.values[:,i])
+        # Define Outlier Boundary by the standard deviation
+        bound = Data_STD * 4
+        lower, upper = Data_Mean - bound, Data_Mean + bound
+        # Remove Outliers that are below the lower bound
+        below = [j for j in range(data.values.shape[0]) if data.values[j,i] < lower]
+        if below:
+            for j in range(len(below)):
+                removeList.append(below[j]) # Append Row to Remove to Remove List
+        # Remove Outliers that are above the upper bound
+        above = [j for j in range(data.values.shape[0]) if data.values[j,i] > upper]
+        if above:
+            for j in range(len(above)):
+                removeList.append(above[j]) # Append Row to Remove to Remove List
+    # Remove Duplicates if they exist
+    removeList = list(set(removeList))
+    # Sort Remove List in increasing order
+    removeList.sort()
+    print("length: ", len(removeList))
+    # Remove Rows for Data Frame
+    for i in range(len(removeList)):
+        data = data.drop(removeList[i])
+    return data
+
 # Attributes:
 # Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate
 # Fine Aggregate, Age, Concrete Compressive Strength
@@ -47,15 +75,20 @@ def gradientdescent(x, y, weights, LR, iterations):
 url = "https://raw.githubusercontent.com/jamesH-48/Gradient-Descent-A1/master/Concrete_Data.csv"
 data = pd.read_csv(url, header=None)
 data = data.rename(columns={0:"Cement",1:"Blast Furnace Slag",2:"Fly Ash",3:"Water",4:"Superplasticizer",5:"Coarse Aggregate",6:"Fine Aggregate",7:"Age",8:"Concrete Compressive Strength"})
-
-# Add Column Intercept of 1s to data frame
-#data.insert(0, 'Intercept', 1)
-# So far hasn't changed value
-
 values = data.values
 
+# Add Column Intercept of 1s to data frame
+# data.insert(0, 'Intercept', 1)
+# So far hasn't changed values
+
 '''
-#Going to test this to see what leads to best results
+Pre-Processing 
+'''
+# Pre-Processing ~ Remove Outliers
+data = removeOutliers(data)
+
+'''
+Graphic Display
 '''
 # Compute pairwise correlation of columns
 corr = data.corr()
@@ -64,6 +97,9 @@ sns.set()
 axi1 = sns.heatmap(corr, cmap="BuPu", annot=True)
 #axi2 = sns.pairplot(data)
 
+'''
+Graphic Display
+'''
 # Plot Data ~ each column has its own subplot
 fig1 = plt.figure()
 fig1.suptitle('Input Attributes', fontsize=16)
@@ -71,40 +107,10 @@ for i in range(values.shape[1]):
     plt.subplot(values.shape[1], 1, i + 1)
     plt.plot(values[:, i])
 
-#print(data.values[0])
-#data.to_csv('new.csv')
-
-#  Pre-Processing ~ Remove Outliers from dataset
-# Over each column (except open/closed)
-removeList = []
-for i in range(values.shape[1] - 1):
-    # Calculate Mean & Standard Deviation
-    Data_Mean, Data_STD = np.mean(data.values[:,i]), np.std(data.values[:,i])
-    # Define Outlier Boundary by the standard deviation
-    bound = Data_STD * 4
-    lower, upper = Data_Mean - bound, Data_Mean + bound
-    # Remove Outliers that are below the lower bound
-    below = [j for j in range(data.values.shape[0]) if data.values[j,i] < lower]
-    if below:
-        for j in range(len(below)):
-            removeList.append(below[j]) # Append Row to Remove to Remove List
-    # Remove Outliers that are above the upper bound
-    above = [j for j in range(data.values.shape[0]) if data.values[j,i] > upper]
-    if above:
-        for j in range(len(above)):
-            removeList.append(above[j]) # Append Row to Remove to Remove List
-# Remove Duplicates if they exist
-removeList = list(set(removeList))
-# Sort Remove List in increasing order
-removeList.sort()
-print("length: ", len(removeList))
-# Remove Rows for Data Frame
-for i in range(len(removeList)):
-    data = data.drop(removeList[i])
-
-#data.to_csv('new.csv')
-
-# Train-Test Split Dataset
+'''
+Pre-Processing 
+'''
+# Pre-Processing ~ Train-Test Split Dataset
 # Create X data frame that contains the inputs
 Xdf = data[["Cement","Blast Furnace Slag","Fly Ash","Water","Superplasticizer","Coarse Aggregate","Fine Aggregate","Age"]]
 # Convert X data frame to numpy array (just known as X)
@@ -113,8 +119,7 @@ X = Xdf.to_numpy()
 Ydf = data[["Concrete Compressive Strength"]]
 # Convert Y data frame to numpy array (just known as Y)
 Y = Ydf.to_numpy()
-
-
+# Split into 4 datasets for training and testing
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2, random_state=0)
 
 
@@ -143,6 +148,7 @@ FinalWeights = gradientdescent(X_train, Y_train, Weights, LR, iterations)
 print(FinalWeights.shape)
 print(FinalWeights)
 # Weights Bar Graph
+
 
 # Apply Model to Test Data Set
 # Get X Values from Test Data x Weights Found
