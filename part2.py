@@ -12,7 +12,7 @@ def removeOutliers(data):
         # Calculate Mean & Standard Deviation
         Data_Mean, Data_STD = np.mean(data.values[:,i]), np.std(data.values[:,i])
         # Define Outlier Boundary by the standard deviation
-        bound = Data_STD * 4
+        bound = Data_STD * 2
         lower, upper = Data_Mean - bound, Data_Mean + bound
         # Remove Outliers that are below the lower bound
         below = [j for j in range(data.values.shape[0]) if data.values[j,i] < lower]
@@ -85,7 +85,7 @@ def main(state):
     # Convert Y data frame to numpy array (just known as Y)
     Y = Ydf.to_numpy()
     # Split into 4 datasets for training and testing
-    X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2, random_state=state)
+    X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.1, random_state=state)
 
     '''
     Sklearn Linear Regression
