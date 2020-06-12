@@ -1,3 +1,6 @@
+# Assignment 1 ~ part1
+# James Hooper ~ NETID: jah171230
+# Hritik Panchasara ~ NETID: hhp160130
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
