@@ -1,3 +1,7 @@
+Assignment 1 
+James Hooper ~ NETID: jah171230
+Hritik Panchasara ~ NETID: hhp160130
+
 - For this assignment we used PyCharm to create/edit/run the code. 
 - In PyCharm the code should run by simply pressing the Run dropdown, then clicking run making sure you are running either part1 or part2 accordingly.
 - The dataset is public on a Github account that one of us own. 
